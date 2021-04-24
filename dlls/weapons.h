@@ -179,6 +179,9 @@ typedef	enum
 	BULLET_PLAYER_357, // python
 	BULLET_PLAYER_BUCKSHOT, // shotgun
 	BULLET_PLAYER_CROWBAR, // crowbar swipe
+#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
+	BULLET_PLAYER_SNIPER,	// sniper
+#endif // defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 
 	BULLET_MONSTER_9MM,
 	BULLET_MONSTER_MP5,
@@ -733,6 +736,9 @@ public:
 	static	TYPEDESCRIPTION m_SaveData[];
 	void Spawn( void );
 	void Precache( void );
+#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
+	void EXPORT FlyThink( void );
+#endif
 	void EXPORT FollowThink( void );
 	void EXPORT IgniteThink( void );
 	void EXPORT RocketTouch( CBaseEntity *pOther );

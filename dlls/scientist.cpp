@@ -26,10 +26,15 @@
 #include	"scripted.h"
 #include	"animation.h"
 #include	"soundent.h"
+#if defined ( THEGATE_DLL )
+#include	"scientist.h"
+#endif // defined ( THEGATE_DLL )
 
 
+#if !defined ( THEGATE_DLL )
 #define		NUM_SCIENTIST_HEADS		4 // four heads available for scientist model
 enum { HEAD_GLASSES = 0, HEAD_EINSTEIN = 1, HEAD_LUTHER = 2, HEAD_SLICK = 3 };
+#endif // !defined ( THEGATE_DLL )
 
 enum
 {
@@ -63,6 +68,7 @@ enum
 // Scientist
 //=======================================================
 
+#if !defined ( THEGATE_DLL )
 class CScientist : public CTalkMonster
 {
 public:
@@ -112,6 +118,7 @@ private:
 	float m_healTime;
 	float m_fearTime;
 };
+#endif // !defined ( THEGATE_DLL )
 
 LINK_ENTITY_TO_CLASS( monster_scientist, CScientist );
 
@@ -1098,6 +1105,7 @@ int CScientist::FriendNumber( int arrayNumber )
 //=========================================================
 // Dead Scientist PROP
 //=========================================================
+#if !defined ( THEGATE_DLL )
 class CDeadScientist : public CBaseMonster
 {
 public:
@@ -1108,6 +1116,7 @@ public:
 	int	m_iPose;// which sequence to display
 	static char *m_szPoses[7];
 };
+#endif // !defined ( THEGATE_DLL )
 char *CDeadScientist::m_szPoses[] = { "lying_on_back", "lying_on_stomach", "dead_sitting", "dead_hang", "dead_table1", "dead_table2", "dead_table3" };
 
 void CDeadScientist::KeyValue( KeyValueData *pkvd )
@@ -1162,6 +1171,7 @@ void CDeadScientist :: Spawn( )
 // Sitting Scientist PROP
 //=========================================================
 
+#if !defined ( THEGATE_DLL )
 class CSittingScientist : public CScientist // kdb: changed from public CBaseMonster so he can speak
 {
 public:
@@ -1182,6 +1192,7 @@ public:
 	int		m_headTurn;
 	float	m_flResponseDelay;
 };
+#endif // !defined ( THEGATE_DLL )
 
 LINK_ENTITY_TO_CLASS( monster_sitting_scientist, CSittingScientist );
 TYPEDESCRIPTION	CSittingScientist::m_SaveData[] = 

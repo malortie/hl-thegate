@@ -17,6 +17,9 @@ typedef	enum
 	BULLET_PLAYER_357, // python
 	BULLET_PLAYER_BUCKSHOT, // shotgun
 	BULLET_PLAYER_CROWBAR, // crowbar swipe
+#if defined ( THEGATE_CLIENT_DLL )
+	BULLET_PLAYER_SNIPER, // sniper
+#endif // defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 
 	BULLET_MONSTER_9MM,
 	BULLET_MONSTER_MP5,
@@ -24,6 +27,17 @@ typedef	enum
 } Bullet;
 
 enum glock_e {
+#if defined ( THEGATE_CLIENT_DLL )
+	GLOCK_IDLE1 = 0,
+	GLOCK_IDLE2,
+	GLOCK_IDLE3,
+	GLOCK_SHOOT,
+	GLOCK_SHOOT_EMPTY,
+	GLOCK_RELOAD_EMPTY,
+	GLOCK_RELOAD,
+	GLOCK_DRAW,
+	GLOCK_EMPTY_IDLE,
+#else
 	GLOCK_IDLE1 = 0,
 	GLOCK_IDLE2,
 	GLOCK_IDLE3,
@@ -34,6 +48,7 @@ enum glock_e {
 	GLOCK_DRAW,
 	GLOCK_HOLSTER,
 	GLOCK_ADD_SILENCER
+#endif
 };
 
 enum shotgun_e {

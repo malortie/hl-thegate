@@ -132,6 +132,21 @@ int DispatchSpawn( edict_t *pent )
 
 	if (pEntity)
 	{
+#if defined ( THEGATE_DLL )
+		//
+		// The Gate:
+		//
+		// Prevent level shutting down due to engine limitation.
+		//
+		if (FStrEq(STRING(gpGlobals->mapname), "gate18"))
+		{
+			if (FStringNull(pEntity->pev->targetname))
+			{
+				if (FClassnameIs(pEntity->pev, "monster_furniture"))
+					return 0;
+			}
+		}
+#endif // defined ( THEGATE_DLL )
 		// Initialize these or entities who don't link to the world won't have anything in here
 		pEntity->pev->absmin = pEntity->pev->origin - Vector(1,1,1);
 		pEntity->pev->absmax = pEntity->pev->origin + Vector(1,1,1);

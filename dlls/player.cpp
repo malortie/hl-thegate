@@ -117,6 +117,9 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 	DEFINE_FIELD( CBasePlayer, m_pTank, FIELD_EHANDLE ),
 	DEFINE_FIELD( CBasePlayer, m_iHideHUD, FIELD_INTEGER ),
 	DEFINE_FIELD( CBasePlayer, m_iFOV, FIELD_INTEGER ),
+#if defined ( THEGATE_DLL )
+	DEFINE_FIELD(CBasePlayer, m_bUpdatePlayerModel, FIELD_BOOLEAN),
+#endif
 	
 	//DEFINE_FIELD( CBasePlayer, m_fDeadTime, FIELD_FLOAT ), // only used in multiplayer games
 	//DEFINE_FIELD( CBasePlayer, m_fGameHUDInitialized, FIELD_INTEGER ), // only used in multiplayer games
@@ -188,6 +191,9 @@ int gmsgTeamNames = 0;
 int gmsgStatusText = 0;
 int gmsgStatusValue = 0; 
 
+#if defined ( THEGATE_DLL )
+int gmsgScope = 0;
+#endif
 
 
 void LinkUserMessages( void )
@@ -236,6 +242,9 @@ void LinkUserMessages( void )
 	gmsgStatusText = REG_USER_MSG("StatusText", -1);
 	gmsgStatusValue = REG_USER_MSG("StatusValue", 3); 
 
+#if defined ( THEGATE_DLL )
+	gmsgScope = REG_USER_MSG("Scope", 1);
+#endif
 }
 
 LINK_ENTITY_TO_CLASS( player, CBasePlayer );
@@ -2723,6 +2732,14 @@ pt_end:
 
 	// Track button info so we can detect 'pressed' and 'released' buttons next frame
 	m_afButtonLast = pev->button;
+#if defined ( THEGATE_DLL )
+	if (m_bUpdatePlayerModel)
+	{
+		CLIENT_COMMAND(edict(), "model player\n");
+
+		m_bUpdatePlayerModel = FALSE;
+	}
+#endif
 }
 
 
@@ -2937,6 +2954,9 @@ void CBasePlayer::Spawn( void )
 	
 	m_flNextChatTime = gpGlobals->time;
 
+#if defined ( THEGATE_DLL )
+	m_bUpdatePlayerModel = FALSE;
+#endif
 	g_pGameRules->PlayerSpawn( this );
 }
 
@@ -3063,6 +3083,9 @@ int CBasePlayer::Restore( CRestore &restore )
 	m_flNextAttack = UTIL_WeaponTimeBase();
 #endif
 
+#if defined ( THEGATE_DLL )
+	m_bUpdatePlayerModel = TRUE;
+#endif
 	return status;
 }
 

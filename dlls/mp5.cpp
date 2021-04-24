@@ -181,9 +181,11 @@ void CMP5::PrimaryAttack()
 
 	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usMP5, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
 
+#if !defined ( THEGATE_DLL ) && !defined ( THEGATE_CLIENT_DLL )
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+#endif // !defined ( THEGATE_DLL ) && !defined ( THEGATE_CLIENT_DLL )
 
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.1);
 
@@ -242,9 +244,11 @@ void CMP5::SecondaryAttack( void )
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1;
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 5;// idle pretty soon after shooting.
 
+#if !defined ( THEGATE_DLL ) && !defined ( THEGATE_CLIENT_DLL )
 	if (!m_pPlayer->m_rgAmmo[m_iSecondaryAmmoType])
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+#endif // !defined ( THEGATE_DLL ) && !defined ( THEGATE_CLIENT_DLL )
 }
 
 void CMP5::Reload( void )
@@ -252,7 +256,11 @@ void CMP5::Reload( void )
 	if ( m_pPlayer->ammo_9mm <= 0 )
 		return;
 
+#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
+	DefaultReload( MP5_MAX_CLIP, MP5_RELOAD, 2.5 );
+#else
 	DefaultReload( MP5_MAX_CLIP, MP5_RELOAD, 1.5 );
+#endif
 }
 
 
