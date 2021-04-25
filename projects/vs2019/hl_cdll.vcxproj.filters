@@ -55,6 +55,9 @@
     <Filter Include="Source Files\_hl\cl_dll\hl">
       <UniqueIdentifier>{bd9d5958-4e67-4bff-bbd8-6ba6dfcdb720}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\cl_dll\TheGate">
+      <UniqueIdentifier>{dded5f24-3208-438d-a82f-e90aa278f049}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\dlls\crossbow.cpp">
@@ -305,6 +308,9 @@
     </ClCompile>
     <ClCompile Include="..\..\public\interface.cpp">
       <Filter>Source Files\public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\cl_dll\TheGate\scope.cpp">
+      <Filter>Source Files\cl_dll\TheGate</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
