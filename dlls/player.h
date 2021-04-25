@@ -322,9 +322,7 @@ public:
 	char m_SbarString1[ SBAR_STRING_SIZE ];
 	
 	float m_flNextChatTime;
-#if defined ( THEGATE_DLL )
 	BOOL m_bUpdatePlayerModel;
-#endif
 	
 };
 

@@ -364,9 +364,7 @@ void CHud :: Init( void )
 	m_AmmoSecondary.Init();
 	m_TextMessage.Init();
 	m_StatusIcons.Init();
-#if defined ( THEGATE_CLIENT_DLL )
 	m_Scope.Init();
-#endif
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
 
 	m_Menu.Init();
@@ -516,9 +514,7 @@ void CHud :: VidInit( void )
 	m_AmmoSecondary.VidInit();
 	m_TextMessage.VidInit();
 	m_StatusIcons.VidInit();
-#if defined ( THEGATE_CLIENT_DLL )
 	m_Scope.VidInit();
-#endif
 	GetClientVoiceMgr()->VidInit();
 }
 

@@ -32,11 +32,7 @@ extern CGraph WorldGraph;
 // houndeye does 20 points of damage spread over a sphere 384 units in diameter, and each additional 
 // squad member increases the BASE damage by 110%, per the spec.
 #define HOUNDEYE_MAX_SQUAD_SIZE			4
-#if defined ( THEGATE_DLL )
 #define	HOUNDEYE_MAX_ATTACK_RADIUS		144
-#else
-#define	HOUNDEYE_MAX_ATTACK_RADIUS		384
-#endif // defined ( THEGATE_DLL )
 #define	HOUNDEYE_SQUAD_BONUS			(float)1.1
 
 #define HOUNDEYE_EYE_FRAMES 4 // how many different switchable maps for the eye
@@ -102,9 +98,7 @@ public:
 	BOOL FCanActiveIdle ( void );
 	Schedule_t *GetScheduleOfType ( int Type );
 	Schedule_t *GetSchedule( void );
-#if defined ( THEGATE_DLL )
 	int IRelationship(CBaseEntity *pTarget);
-#endif // defined ( THEGATE_DLL )
 
 	int	Save( CSave &save ); 
 	int Restore( CRestore &restore );
@@ -305,7 +299,6 @@ void CHoundeye :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			}
 
 		case HOUND_AE_THUMP:
-#if defined ( THEGATE_DLL )
 		{
 			// SOUND HERE!
 			CBaseEntity *pHurt = CheckTraceHullAttack(70, gSkillData.bullsquidDmgBite, DMG_SLASH);
@@ -317,10 +310,6 @@ void CHoundeye :: HandleAnimEvent( MonsterEvent_t *pEvent )
 				pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_up * 2;
 			}
 		}
-#else
-			// emit the shockwaves
-			SonicAttack();
-#endif
 			break;
 
 		case HOUND_AE_ANGERSOUND1:
@@ -356,11 +345,7 @@ void CHoundeye :: Spawn()
 
 	pev->solid			= SOLID_SLIDEBOX;
 	pev->movetype		= MOVETYPE_STEP;
-#if defined ( THEGATE_DLL )
 	m_bloodColor		= BLOOD_COLOR_RED;
-#else
-	m_bloodColor		= BLOOD_COLOR_YELLOW;
-#endif
 	pev->effects		= 0;
 	pev->health			= gSkillData.houndeyeHealth;
 	pev->yaw_speed		= 5;//!!! should we put this in the monster's changeanim function since turn rates may vary with state/anim?
@@ -1327,7 +1312,6 @@ Schedule_t *CHoundeye :: GetSchedule( void )
 
 	return CSquadMonster :: GetSchedule();
 }
-#if defined ( THEGATE_DLL )
 int CHoundeye::IRelationship(CBaseEntity *pTarget)
 {
 	if (FClassnameIs(pTarget->pev, "monster_human_grunt") || FClassnameIs(pTarget->pev, "monster_grunt_repel"))
@@ -1337,4 +1321,3 @@ int CHoundeye::IRelationship(CBaseEntity *pTarget)
 
 	return CSquadMonster::IRelationship(pTarget);
 }
-#endif // defined ( THEGATE_DLL )

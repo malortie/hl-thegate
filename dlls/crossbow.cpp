@@ -220,9 +220,7 @@ void CCrossbowBolt::ExplodeThink( void )
 }
 #endif
 
-#if defined ( THEGATE_DLL )
 extern int gmsgScope;
-#endif
 enum crossbow_e {
 	CROSSBOW_IDLE1 = 0,	// full
 	CROSSBOW_IDLE2,		// empty
@@ -380,7 +378,6 @@ void CCrossbow::FireSniperBolt()
 #endif
 }
 
-#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 void CCrossbow::FireBolt()
 {
 	// don't fire underwater
@@ -428,73 +425,6 @@ void CCrossbow::FireBolt()
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
-#else
-void CCrossbow::FireBolt()
-{
-	TraceResult tr;
-
-	if (m_iClip == 0)
-	{
-		PlayEmptySound( );
-		return;
-	}
-
-	m_pPlayer->m_iWeaponVolume = QUIET_GUN_VOLUME;
-
-	m_iClip--;
-
-	int flags;
-#if defined( CLIENT_WEAPONS )
-	flags = FEV_NOTHOST;
-#else
-	flags = 0;
-#endif
-
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usCrossbow, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0, 0, m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType], 0, 0 );
-
-	// player "shoot" animation
-	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
-
-	Vector anglesAim = m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle;
-	UTIL_MakeVectors( anglesAim );
-	
-	anglesAim.x		= -anglesAim.x;
-	Vector vecSrc	 = m_pPlayer->GetGunPosition( ) - gpGlobals->v_up * 2;
-	Vector vecDir	 = gpGlobals->v_forward;
-
-#ifndef CLIENT_DLL
-	CCrossbowBolt *pBolt = CCrossbowBolt::BoltCreate();
-	pBolt->pev->origin = vecSrc;
-	pBolt->pev->angles = anglesAim;
-	pBolt->pev->owner = m_pPlayer->edict();
-
-	if (m_pPlayer->pev->waterlevel == 3)
-	{
-		pBolt->pev->velocity = vecDir * BOLT_WATER_VELOCITY;
-		pBolt->pev->speed = BOLT_WATER_VELOCITY;
-	}
-	else
-	{
-		pBolt->pev->velocity = vecDir * BOLT_AIR_VELOCITY;
-		pBolt->pev->speed = BOLT_AIR_VELOCITY;
-	}
-	pBolt->pev->avelocity.z = 10;
-#endif
-
-	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
-		// HEV suit - indicate out of ammo condition
-		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
-
-	m_flNextPrimaryAttack = GetNextAttackDelay(0.75);
-
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.75;
-
-	if (m_iClip != 0)
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 5.0;
-	else
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.75;
-}
-#endif // defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 
 
 void CCrossbow::SecondaryAttack()
@@ -509,13 +439,11 @@ void CCrossbow::SecondaryAttack()
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 20;
 		m_fInZoom = 1;
 	}
-#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 #ifndef CLIENT_DLL
 	MESSAGE_BEGIN(MSG_ONE, gmsgScope, NULL, m_pPlayer->pev);
 		WRITE_BYTE(m_fInZoom);
 	MESSAGE_END();
 #endif
-#endif // defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 	
 	pev->nextthink = UTIL_WeaponTimeBase() + 0.1;
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0;
@@ -532,11 +460,7 @@ void CCrossbow::Reload( void )
 		SecondaryAttack();
 	}
 
-#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 	if ( DefaultReload( 5, CROSSBOW_RELOAD, 3.2 ) )
-#else
-	if ( DefaultReload( 5, CROSSBOW_RELOAD, 4.5 ) )
-#endif
 	{
 		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/xbow_reload1.wav", RANDOM_FLOAT(0.95, 1.0), ATTN_NORM, 0, 93 + RANDOM_LONG(0,0xF));
 	}
@@ -554,39 +478,14 @@ void CCrossbow::WeaponIdle( void )
 		float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );
 		if (flRand <= 0.75)
 		{
-#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 
 			SendWeaponAnim( CROSSBOW_IDLE1 );
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 121.0 / 15.0;
-#else
-			if (m_iClip)
-			{
-				SendWeaponAnim( CROSSBOW_IDLE1 );
-			}
-			else
-			{
-				SendWeaponAnim( CROSSBOW_IDLE2 );
-			}
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
-#endif // defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 		}
 		else
 		{
-#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 			SendWeaponAnim( CROSSBOW_FIDGET1 );
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 121.0 / 15.0;
-#else
-			if (m_iClip)
-			{
-				SendWeaponAnim( CROSSBOW_FIDGET1 );
-				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 90.0 / 30.0;
-			}
-			else
-			{
-				SendWeaponAnim( CROSSBOW_FIDGET2 );
-				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 80.0 / 30.0;
-			}
-#endif // defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 		}
 	}
 }

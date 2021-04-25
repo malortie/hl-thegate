@@ -295,9 +295,7 @@ void EV_HLDM_DecalGunshot( pmtrace_t *pTrace, int iBulletType )
 		case BULLET_MONSTER_MP5:
 		case BULLET_PLAYER_BUCKSHOT:
 		case BULLET_PLAYER_357:
-#if defined(THEGATE_CLIENT_DLL)
 	    case BULLET_PLAYER_SNIPER:
-#endif // defined(THEGATE_CLIENT_DLL)
 		default:
 			// smoke and decal
 			EV_HLDM_GunshotDecalTrace( pTrace, EV_HLDM_DamageDecal( pe ) );
@@ -433,9 +431,7 @@ void EV_HLDM_FireBullets( int idx, float *forward, float *right, float *up, int 
 			
 				break;
 			case BULLET_PLAYER_357:
-#if defined(THEGATE_CLIENT_DLL)
 			case BULLET_PLAYER_SNIPER:
-#endif // defined(THEGATE_CLIENT_DLL)
 				
 				EV_HLDM_PlayTextureSound( idx, &tr, vecSrc, vecEnd, iBulletType );
 				EV_HLDM_DecalGunshot( &tr, iBulletType );
@@ -1295,7 +1291,6 @@ void EV_FireCrossbow2( event_args_t *args )
 //TODO: Fully predict the fliying bolt.
 void EV_FireCrossbow( event_args_t *args )
 {
-#if defined ( THEGATE_CLIENT_DLL )
 	int idx;
 	vec3_t origin;
 	vec3_t angles;
@@ -1328,27 +1323,6 @@ void EV_FireCrossbow( event_args_t *args )
 	VectorCopy( forward, vecAiming );
 
 	EV_HLDM_FireBullets( idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_SNIPER, 0, 0, args->fparam1, args->fparam2 );
-#else
-	int idx;
-	vec3_t origin;
-
-	idx = args->entindex;
-	VectorCopy( args->origin, origin );
-	
-	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/xbow_fire1.wav", 1, ATTN_NORM, 0, 93 + gEngfuncs.pfnRandomLong(0,0xF) );
-	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_ITEM, "weapons/xbow_reload1.wav", gEngfuncs.pfnRandomFloat(0.95, 1.0), ATTN_NORM, 0, 93 + gEngfuncs.pfnRandomLong(0,0xF) );
-
-	//Only play the weapon anims if I shot it. 
-	if ( EV_IsLocal( idx ) )
-	{
-		if ( args->iparam1 )
-			gEngfuncs.pEventAPI->EV_WeaponAnimation( CROSSBOW_FIRE1, 1 );
-		else if ( args->iparam2 )
-			gEngfuncs.pEventAPI->EV_WeaponAnimation( CROSSBOW_FIRE3, 1 );
-
-		V_PunchAxis( 0, -2.0 );
-	}
-#endif
 }
 //======================
 //	   CROSSBOW END 
@@ -1358,7 +1332,6 @@ void EV_FireCrossbow( event_args_t *args )
 //	    RPG START 
 //======================
 enum rpg_e {
-#if defined ( THEGATE_CLIENT_DLL )
 	RPG_IDLE = 0,
 	RPG_DRAW1,
 	RPG_AIMED,
@@ -1367,18 +1340,6 @@ enum rpg_e {
 	RPG_UP_TO_DOWN,
 	RPG_RELOAD_AIMED,
 	RPG_RELOAD_IDLE,
-#else
-	RPG_IDLE = 0,
-	RPG_FIDGET,
-	RPG_RELOAD,		// to reload
-	RPG_FIRE2,		// to empty
-	RPG_HOLSTER1,	// loaded
-	RPG_DRAW1,		// loaded
-	RPG_HOLSTER2,	// unloaded
-	RPG_DRAW_UL,	// unloaded
-	RPG_IDLE_UL,	// unloaded idle
-	RPG_FIDGET_UL,	// unloaded fidget
-#endif // defined ( THEGATE_CLIENT_DLL )
 };
 
 void EV_FireRpg( event_args_t *args )
@@ -1390,18 +1351,11 @@ void EV_FireRpg( event_args_t *args )
 	VectorCopy( args->origin, origin );
 	
 	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/rocketfire1.wav", 0.9, ATTN_NORM, 0, PITCH_NORM );
-#if !defined ( THEGATE_CLIENT_DLL )
-	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_ITEM, "weapons/glauncher.wav", 0.7, ATTN_NORM, 0, PITCH_NORM );
-#endif // !defined ( THEGATE_CLIENT_DLL )
 
 	//Only play the weapon anims if I shot it. 
 	if ( EV_IsLocal( idx ) )
 	{
-#if defined ( THEGATE_CLIENT_DLL )
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( RPG_LAUNCH, 0 );
-#else
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( RPG_FIRE2, 1 );
-#endif // defined ( THEGATE_CLIENT_DLL )
 	
 		V_PunchAxis( 0, -5.0 );
 	}

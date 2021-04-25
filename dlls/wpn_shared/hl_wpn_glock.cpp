@@ -22,7 +22,6 @@
 #include "player.h"
 
 enum glock_e {
-#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 	GLOCK_IDLE1 = 0,
 	GLOCK_IDLE2,
 	GLOCK_IDLE3,
@@ -32,18 +31,6 @@ enum glock_e {
 	GLOCK_RELOAD,
 	GLOCK_DRAW,
 	GLOCK_EMPTY_IDLE,
-#else
-	GLOCK_IDLE1 = 0,
-	GLOCK_IDLE2,
-	GLOCK_IDLE3,
-	GLOCK_SHOOT,
-	GLOCK_SHOOT_EMPTY,
-	GLOCK_RELOAD,
-	GLOCK_RELOAD_NOT_EMPTY,
-	GLOCK_DRAW,
-	GLOCK_HOLSTER,
-	GLOCK_ADD_SILENCER
-#endif // defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 };
 
 LINK_ENTITY_TO_CLASS( weapon_glock, CGlock );
@@ -175,11 +162,6 @@ void CGlock::GlockFire( float flSpread , float flCycleTime, BOOL fUseAutoAim )
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
-#if !defined ( THEGATE_DLL ) && !defined ( THEGATE_CLIENT_DLL )
-	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
-		// HEV suit - indicate out of ammo condition
-		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
-#endif // !defined ( THEGATE_DLL ) && !defined ( THEGATE_CLIENT_DLL )
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
@@ -190,16 +172,7 @@ void CGlock::Reload( void )
 	if ( m_pPlayer->ammo_9mm <= 0 )
 		 return;
 
-#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 	int iResult = DefaultReload(GLOCK_MAX_CLIP, (m_iClip == 0) ? GLOCK_RELOAD_EMPTY : GLOCK_RELOAD, 2.1);
-#else
-	int iResult;
-
-	if (m_iClip == 0)
-		iResult = DefaultReload( 17, GLOCK_RELOAD, 1.5 );
-	else
-		iResult = DefaultReload( 17, GLOCK_RELOAD_NOT_EMPTY, 1.5 );
-#endif
 
 	if (iResult)
 	{
@@ -221,38 +194,14 @@ void CGlock::WeaponIdle( void )
 	// only idle if the slid isn't back
 	if (m_iClip != 0)
 	{
-#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0 / 12;
 		SendWeaponAnim( GLOCK_IDLE1, 1 );
-#else
-		int iAnim;
-		float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0.0, 1.0 );
-
-		if (flRand <= 0.3 + 0 * 0.75)
-		{
-			iAnim = GLOCK_IDLE3;
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 49.0 / 16;
-		}
-		else if (flRand <= 0.6 + 0 * 0.875)
-		{
-			iAnim = GLOCK_IDLE1;
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0 / 16.0;
-		}
-		else
-		{
-			iAnim = GLOCK_IDLE2;
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 40.0 / 16.0;
-		}
-		SendWeaponAnim( iAnim, 1 );
-#endif // defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 	}
-#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 	else
 	{
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0 / 30.0;
 		SendWeaponAnim(GLOCK_EMPTY_IDLE, 1);
 	}
-#endif // defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 }
 
 

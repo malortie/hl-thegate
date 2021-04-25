@@ -27,7 +27,6 @@
 
 
 enum rpg_e {
-#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 	RPG_IDLE = 0,
 	RPG_DRAW1,
 	RPG_AIMED,
@@ -36,18 +35,6 @@ enum rpg_e {
 	RPG_UP_TO_DOWN,
 	RPG_RELOAD_AIMED,
 	RPG_RELOAD_IDLE,
-#else
-	RPG_IDLE = 0,
-	RPG_FIDGET,
-	RPG_RELOAD,		// to reload
-	RPG_FIRE2,		// to empty
-	RPG_HOLSTER1,	// loaded
-	RPG_DRAW1,		// loaded
-	RPG_HOLSTER2,	// unloaded
-	RPG_DRAW_UL,	// unloaded
-	RPG_IDLE_UL,	// unloaded idle
-	RPG_FIDGET_UL,	// unloaded fidget
-#endif // defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 };
 
 LINK_ENTITY_TO_CLASS( weapon_rpg, CRpg );
@@ -133,7 +120,6 @@ CRpgRocket *CRpgRocket::CreateRpgRocket( Vector vecOrigin, Vector vecAngles, CBa
 //=========================================================
 void CRpgRocket :: Spawn( void )
 {
-#if defined ( THEGATE_DLL )
 	Precache();
 	// motor
 	pev->movetype = MOVETYPE_BOUNCE;
@@ -158,32 +144,6 @@ void CRpgRocket :: Spawn( void )
 	pev->nextthink = gpGlobals->time + 0.05;
 
 	pev->dmg = gSkillData.plrDmgRPG;
-#else
-	Precache( );
-	// motor
-	pev->movetype = MOVETYPE_BOUNCE;
-	pev->solid = SOLID_BBOX;
-
-	SET_MODEL(ENT(pev), "models/rpgrocket.mdl");
-	UTIL_SetSize(pev, Vector( 0, 0, 0), Vector(0, 0, 0));
-	UTIL_SetOrigin( pev, pev->origin );
-
-	pev->classname = MAKE_STRING("rpg_rocket");
-
-	SetThink( &CRpgRocket::IgniteThink );
-	SetTouch( &CRpgRocket::ExplodeTouch );
-
-	pev->angles.x -= 30;
-	UTIL_MakeVectors( pev->angles );
-	pev->angles.x = -(pev->angles.x + 30);
-
-	pev->velocity = gpGlobals->v_forward * 250;
-	pev->gravity = 0.5;
-
-	pev->nextthink = gpGlobals->time + 0.4;
-
-	pev->dmg = gSkillData.plrDmgRPG;
-#endif // defined ( THEGATE_DLL )
 }
 
 //=========================================================
@@ -237,17 +197,11 @@ void CRpgRocket :: IgniteThink( void  )
 
 	m_flIgniteTime = gpGlobals->time;
 
-#if defined ( THEGATE_DLL )
 	// Move in forward direction. Ignore guiding.
 	SetThink( &CRpgRocket::FlyThink );
-#else
-	// set to follow laser spot
-	SetThink( &CRpgRocket::FollowThink );
-#endif // defined ( THEGATE_DLL )
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
-#if defined ( THEGATE_DLL )
 void CRpgRocket::FlyThink(void)
 {
 	Vector vecTarget;
@@ -297,7 +251,6 @@ void CRpgRocket::FlyThink(void)
 
 	pev->nextthink = gpGlobals->time + 0.1;
 }
-#endif // defined ( THEGATE_DLL )
 
 void CRpgRocket :: FollowThink( void  )
 {
@@ -401,29 +354,9 @@ void CRpg::Reload( void )
 	
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
 
-#if !defined( THEGATE_DLL ) && !defined( THEGATE_CLIENT_DLL )
-	if ( m_cActiveRockets && m_fSpotActive )
-	{
-		// no reloading when there are active missiles tracking the designator.
-		// ward off future autoreload attempts by setting next attack time into the future for a bit. 
-		return;
-	}
-
-#ifndef CLIENT_DLL
-	if ( m_pSpot && m_fSpotActive )
-	{
-		m_pSpot->Suspend( 2.1 );
-		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 2.1;
-	}
-#endif
-#endif // !defined( THEGATE_DLL ) && !defined( THEGATE_CLIENT_DLL )
 
 	if ( m_iClip == 0 )
-#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 		iResult = DefaultReload( RPG_MAX_CLIP, RPG_RELOAD_IDLE, 3.5 );
-#else
-		iResult = DefaultReload( RPG_MAX_CLIP, RPG_RELOAD, 2 );
-#endif // defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 	
 	if ( iResult )
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
@@ -436,11 +369,7 @@ void CRpg::Spawn( )
 	m_iId = WEAPON_RPG;
 
 	SET_MODEL(ENT(pev), "models/w_rpg.mdl");
-#if defined( THEGATE_DLL ) || defined( THEGATE_CLIENT_DLL )
 	m_fSpotActive = 0;
-#else
-	m_fSpotActive = 1;
-#endif // defined( THEGATE_DLL ) || defined( THEGATE_CLIENT_DLL )
 
 #ifdef CLIENT_DLL
 	if ( bIsMultiplayer() )
@@ -509,12 +438,6 @@ int CRpg::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CRpg::Deploy( )
 {
-#if !defined( THEGATE_DLL ) && !defined( THEGATE_CLIENT_DLL )
-	if ( m_iClip == 0 )
-	{
-		return DefaultDeploy( "models/v_rpg.mdl", "models/p_rpg.mdl", RPG_DRAW_UL, "rpg" );
-	}
-#endif // !defined( THEGATE_DLL ) && !defined( THEGATE_CLIENT_DLL )
 
 	return DefaultDeploy( "models/v_rpg.mdl", "models/p_rpg.mdl", RPG_DRAW1, "rpg" );
 }
@@ -522,13 +445,6 @@ BOOL CRpg::Deploy( )
 
 BOOL CRpg::CanHolster( void )
 {
-#if !defined( THEGATE_DLL ) && !defined( THEGATE_CLIENT_DLL )
-	if ( m_fSpotActive && m_cActiveRockets )
-	{
-		// can't put away while guiding a missile.
-		return FALSE;
-	}
-#endif // !defined( THEGATE_DLL ) && !defined( THEGATE_CLIENT_DLL )
 
 	return TRUE;
 }
@@ -539,18 +455,6 @@ void CRpg::Holster( int skiplocal /* = 0 */ )
 
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	
-#if !defined( THEGATE_DLL ) && !defined( THEGATE_CLIENT_DLL )
-	SendWeaponAnim( RPG_HOLSTER1 );
-
-#ifndef CLIENT_DLL
-	if (m_pSpot)
-	{
-		m_pSpot->Killed( NULL, GIB_NEVER );
-		m_pSpot = NULL;
-	}
-#endif
-
-#endif // !defined( THEGATE_DLL ) && !defined( THEGATE_CLIENT_DLL )
 }
 
 
@@ -596,35 +500,16 @@ void CRpg::PrimaryAttack()
 	{
 		PlayEmptySound( );
 	}
-#if !defined( THEGATE_DLL ) && !defined( THEGATE_CLIENT_DLL )
-	UpdateSpot( );
-#endif
 }
 
 
 void CRpg::SecondaryAttack()
 {
-#if !defined ( THEGATE_DLL ) && !defined ( THEGATE_CLIENT_DLL )
-	m_fSpotActive = ! m_fSpotActive;
-
-#ifndef CLIENT_DLL
-	if (!m_fSpotActive && m_pSpot)
-	{
-		m_pSpot->Killed( NULL, GIB_NORMAL );
-		m_pSpot = NULL;
-	}
-#endif
-
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.2;
-#endif // !defined ( THEGATE_DLL ) && !defined ( THEGATE_CLIENT_DLL )
 }
 
 
 void CRpg::WeaponIdle( void )
 {
-#if !defined( THEGATE_DLL ) && !defined( THEGATE_CLIENT_DLL )
-	UpdateSpot( );
-#endif
 
 	ResetEmptySound( );
 
@@ -633,33 +518,8 @@ void CRpg::WeaponIdle( void )
 
 	if ( m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
-#if defined( THEGATE_DLL ) || defined( THEGATE_CLIENT_DLL )
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0 / 20.0;
 		SendWeaponAnim( RPG_IDLE );
-#else
-		int iAnim;
-		float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );
-		if (flRand <= 0.75 || m_fSpotActive)
-		{
-			if ( m_iClip == 0 )
-				iAnim = RPG_IDLE_UL;
-			else
-				iAnim = RPG_IDLE;
-
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 90.0 / 15.0;
-		}
-		else
-		{
-			if ( m_iClip == 0 )
-				iAnim = RPG_FIDGET_UL;
-			else
-				iAnim = RPG_FIDGET;
-
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0;
-		}
-
-		SendWeaponAnim( iAnim );
-#endif // defined( THEGATE_DLL ) || defined( THEGATE_CLIENT_DLL )
 	}
 	else
 	{

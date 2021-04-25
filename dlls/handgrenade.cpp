@@ -24,7 +24,6 @@
 #define	HANDGRENADE_PRIMARY_VOLUME		450
 
 enum handgrenade_e {
-#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 	HANDGRENADE_IDLE = 0,
 	HANDGRENADE_DRAW,
 	HANDGRENADE_PINPULL,
@@ -34,16 +33,6 @@ enum handgrenade_e {
 	HANDGRENADE_EXPLODING_DRAW,
 	HANDGRENADE_EXPLODING_PINPULL,
 	HANDGRENADE_EXPLODING_THROW,
-#else
-	HANDGRENADE_IDLE = 0,
-	HANDGRENADE_FIDGET,
-	HANDGRENADE_PINPULL,
-	HANDGRENADE_THROW1,	// toss
-	HANDGRENADE_THROW2,	// medium
-	HANDGRENADE_THROW3,	// hard
-	HANDGRENADE_HOLSTER,
-	HANDGRENADE_DRAW
-#endif // defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 };
 
 
@@ -169,22 +158,7 @@ void CHandGrenade::WeaponIdle( void )
 
 		CGrenade::ShootTimed( m_pPlayer->pev, vecSrc, vecThrow, time );
 
-#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 		SendWeaponAnim( HANDGRENADE_THROW );
-#else
-		if ( flVel < 500 )
-		{
-			SendWeaponAnim( HANDGRENADE_THROW1 );
-		}
-		else if ( flVel < 1000 )
-		{
-			SendWeaponAnim( HANDGRENADE_THROW2 );
-		}
-		else
-		{
-			SendWeaponAnim( HANDGRENADE_THROW3 );
-		}
-#endif // defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 
 		// player "shoot" animation
 		m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
@@ -227,25 +201,8 @@ void CHandGrenade::WeaponIdle( void )
 
 	if ( m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] )
 	{
-#if defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 31.0 / 10.0;
 		SendWeaponAnim( HANDGRENADE_IDLE );
-#else
-		int iAnim;
-		float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );
-		if (flRand <= 0.75)
-		{
-			iAnim = HANDGRENADE_IDLE;
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );// how long till we do this again.
-		}
-		else 
-		{
-			iAnim = HANDGRENADE_FIDGET;
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 75.0 / 30.0;
-		}
-
-		SendWeaponAnim( iAnim );
-#endif // defined ( THEGATE_DLL ) || defined ( THEGATE_CLIENT_DLL )
 	}
 }
 

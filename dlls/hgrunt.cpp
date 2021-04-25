@@ -268,12 +268,10 @@ int CHGrunt::IRelationship ( CBaseEntity *pTarget )
 		return R_NM;
 	}
 
-#if defined ( THEGATE_DLL )
 	if (FClassnameIs(pTarget->pev, "monster_houndeye"))
 	{
 		return R_NO;
 	}
-#endif
 	return CSquadMonster::IRelationship( pTarget );
 }
 

@@ -132,7 +132,6 @@ int DispatchSpawn( edict_t *pent )
 
 	if (pEntity)
 	{
-#if defined ( THEGATE_DLL )
 		//
 		// The Gate:
 		//
@@ -146,7 +145,6 @@ int DispatchSpawn( edict_t *pent )
 					return 0;
 			}
 		}
-#endif // defined ( THEGATE_DLL )
 		// Initialize these or entities who don't link to the world won't have anything in here
 		pEntity->pev->absmin = pEntity->pev->origin - Vector(1,1,1);
 		pEntity->pev->absmax = pEntity->pev->origin + Vector(1,1,1);

@@ -537,7 +537,6 @@ private:
 //-----------------------------------------------------
 //
 
-#if defined ( THEGATE_CLIENT_DLL )
 //
 //-----------------------------------------------------
 //
@@ -570,7 +569,6 @@ private:
 	HSPRITE m_scopes[SCOPE_HSPRITE_COUNT];
 	int m_ScopeSize;
 };
-#endif // defined ( THEGATE_CLIENT_DLL )
 
 class CHud
 {
@@ -645,9 +643,7 @@ public:
 	CHudTextMessage m_TextMessage;
 	CHudStatusIcons m_StatusIcons;
 	CHudBenchmark	m_Benchmark;
-#if defined ( THEGATE_CLIENT_DLL )
 	CHudScope		m_Scope;
-#endif
 
 	void Init( void );
 	void VidInit( void );

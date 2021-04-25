@@ -807,7 +807,6 @@ void CTargetCDAudio::Play( void )
 
 void CTriggerHurt :: Spawn( void )
 {
-#if defined ( THEGATE_DLL )
 	//
 	// The Gate:
 	//
@@ -821,7 +820,6 @@ void CTriggerHurt :: Spawn( void )
 			return;
 		}
 	}
-#endif
 	InitTrigger();
 	SetTouch ( &CTriggerHurt::HurtTouch );
 

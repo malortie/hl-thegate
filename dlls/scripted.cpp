@@ -1207,17 +1207,12 @@ public:
 	void Spawn ( void );
 	void Die( void );
 	int	 Classify ( void );
-#if defined ( THEGATE_DLL )
 	virtual int	ObjectCaps(void);
-#else
-	virtual int	ObjectCaps( void ) { return (CBaseMonster :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
-#endif // defined ( THEGATE_DLL )
 };
 
 
 LINK_ENTITY_TO_CLASS( monster_furniture, CFurniture );
 
-#if defined ( THEGATE_DLL )
 int	CFurniture::ObjectCaps(void)
 {
 	int caps = (CBaseMonster::ObjectCaps() & ~FCAP_ACROSS_TRANSITION);
@@ -1229,7 +1224,6 @@ int	CFurniture::ObjectCaps(void)
 
 	return caps;
 }
-#endif // defined ( THEGATE_DLL )
 
 //=========================================================
 // Furniture is killed
