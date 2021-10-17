@@ -99,6 +99,7 @@ public:
 	Schedule_t *GetScheduleOfType ( int Type );
 	Schedule_t *GetSchedule( void );
 	int IRelationship(CBaseEntity *pTarget);
+	BOOL HasHumanGibs(void) { return TRUE; }
 
 	int	Save( CSave &save ); 
 	int Restore( CRestore &restore );
