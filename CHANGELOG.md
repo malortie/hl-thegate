@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [thegate/1.0.2] - 2021-10-17
+
+### Changed
+
+- Tweaked dog attack radius
+
+### Fixed
+
+- Dog attack code
+- Dog throwing alien gibs
+
 ## [thegate/1.0.1] - 2021-04-25
 
 ### Added
