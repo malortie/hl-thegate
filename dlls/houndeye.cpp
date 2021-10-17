@@ -300,17 +300,8 @@ void CHoundeye :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			}
 
 		case HOUND_AE_THUMP:
-		{
-			// SOUND HERE!
-			CBaseEntity *pHurt = CheckTraceHullAttack(70, gSkillData.bullsquidDmgBite, DMG_SLASH);
-
-			if (pHurt)
-			{
-				pHurt->pev->punchangle.x = 5;
-				pHurt->pev->velocity = pHurt->pev->velocity - gpGlobals->v_forward * 16;
-				pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_up * 2;
-			}
-		}
+			// emit the shockwaves
+			SonicAttack();
 			break;
 
 		case HOUND_AE_ANGERSOUND1:
@@ -570,7 +561,7 @@ void CHoundeye :: WriteBeamColor ( void )
 void CHoundeye :: SonicAttack ( void )
 {
 	float		flAdjustedDamage;
-	float		flDist;
+/*	float		flDist;
 
 	switch ( RANDOM_LONG( 0, 2 ) )
 	{
@@ -620,7 +611,7 @@ void CHoundeye :: SonicAttack ( void )
 		
 		WRITE_BYTE( 255 ); //brightness
 		WRITE_BYTE( 0 );		// speed
-	MESSAGE_END();
+	MESSAGE_END();*/
 
 
 	CBaseEntity *pEntity = NULL;
@@ -629,14 +620,17 @@ void CHoundeye :: SonicAttack ( void )
 	{
 		if ( pEntity->pev->takedamage != DAMAGE_NO )
 		{
-			if ( !FClassnameIs(pEntity->pev, "monster_houndeye") )
+			if ( !FClassnameIs(pEntity->pev, "monster_houndeye") && 
+				 !FClassnameIs(pEntity->pev, "monster_human_grunt") && 
+				 !FClassnameIs(pEntity->pev, "func_breakable") && 
+				 !FClassnameIs(pEntity->pev, "func_pushable") )
 			{// houndeyes don't hurt other houndeyes with their attack
 
 				// houndeyes do FULL damage if the ent in question is visible. Half damage otherwise.
 				// This means that you must get out of the houndeye's attack range entirely to avoid damage.
 				// Calculate full damage first
 
-				if ( SquadCount() > 1 )
+				/*if ( SquadCount() > 1 )
 				{
 					// squad gets attack bonus.
 					flAdjustedDamage = gSkillData.houndeyeDmgBlast + gSkillData.houndeyeDmgBlast * ( HOUNDEYE_SQUAD_BONUS * ( SquadCount() - 1 ) );
@@ -666,12 +660,14 @@ void CHoundeye :: SonicAttack ( void )
 						flAdjustedDamage = 0;
 					}
 				}
+				*/
+				flAdjustedDamage = 7; // The Gate - Fixed damage
 
 				//ALERT ( at_aiconsole, "Damage: %f\n", flAdjustedDamage );
 
 				if (flAdjustedDamage > 0 )
 				{
-					pEntity->TakeDamage ( pev, pev, flAdjustedDamage, DMG_SONIC | DMG_ALWAYSGIB );
+					pEntity->TakeDamage ( pev, pev, flAdjustedDamage, DMG_SLASH | DMG_ALWAYSGIB );
 				}
 			}
 		}
