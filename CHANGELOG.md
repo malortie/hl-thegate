@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [thegate/1.0.2] - 2021-10-17
 
+### Added
+
+- CMake support
+
 ### Changed
 
 - Tweaked dog attack radius
